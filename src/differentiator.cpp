@@ -87,16 +87,22 @@ ExprNodePtr Differentiator::diffFunction(const ExprNodePtr& expr, const std::str
             return buildOperator(OperatorType::MUL,
                 buildOperator(OperatorType::DIV, buildNumber(std::string("1")), std::move(originalLeft)),
                 std::move(left));
-        case FunctionType::LOG: { // Assuming base is constant.
-            ExprNodePtr base = std::move(originalLeft);
-            ExprNodePtr value = std::move(originalRight);
-            ExprNodePtr valueDeriv = std::move(right);
-            ExprNodePtr lnBase = buildFunction(std::string("ln"), FunctionType::LN, std::move(base));
-            ExprNodePtr denominator = buildOperator(OperatorType::MUL, std::move(value), std::move(lnBase));
-            return buildOperator(OperatorType::MUL,
-                buildOperator(OperatorType::DIV, buildNumber(std::string("1")), std::move(denominator)),
-                std::move(valueDeriv));
+        case FunctionType::LOG: { // log_base(value) = ln(value) / ln(base)
+            ExprNodePtr originalRightCopy = cloneSubtree(originalRight.get());
+            ExprNodePtr originalLeftCopy = cloneSubtree(originalLeft.get());
+            ExprNodePtr lnValue = buildFunction(std::string("ln"), FunctionType::LN, std::move(originalRightCopy));
+            ExprNodePtr lnBase = buildFunction(std::string("ln"), FunctionType::LN, std::move(originalLeftCopy));
+            
+            ExprNodePtr numerator = buildOperator(OperatorType::SUB,
+                buildOperator(OperatorType::MUL,buildOperator(OperatorType::DIV, std::move(right), cloneSubtree(originalRight.get())),
+                    cloneSubtree(originalLeft.get())),
+                buildOperator(OperatorType::MUL, cloneSubtree(originalRight.get()),
+                    buildOperator(OperatorType::DIV, std::move(left), cloneSubtree(originalLeft.get()))));
+            
+            ExprNodePtr denominator = buildOperator(OperatorType::POW, std::move(lnBase), buildNumber(std::string("2")));
+            return buildOperator(OperatorType::DIV, std::move(numerator), std::move(denominator));
         }
+                
         case FunctionType::COS: // (cos(u))' = -sin(u) * u'
             return buildOperator(OperatorType::MUL,
                 buildOperator(OperatorType::MUL, buildNumber(std::string("-1")),
