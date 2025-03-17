@@ -16,7 +16,7 @@ namespace autodiff {
         ExprNodePtr diffFunction(const ExprNodePtr& expr, const std::string& var);
     };
     
-    ExprNodePtr cloneSubtree(const ExprNodePtr& expr);
+    ExprNodePtr cloneSubtree(const ExprNode* expr);
 
 }; // namespace autodiff
 

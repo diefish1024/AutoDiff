@@ -12,6 +12,9 @@ std::string TreePrinter::print(const ExprNodePtr& node) const {
 }
 
 std::string TreePrinter::printNode(const ExprNodePtr& node) const {
+    if (!node) {
+        return "";
+    }
     switch (node->type) {
         case NodeType::NUMBER:
         case NodeType::VARIABLE:
@@ -48,7 +51,7 @@ std::string TreePrinter::printFunction(const ExprNodePtr& node) const {
     if (funcType == FunctionType::LOG || funcType == FunctionType::POW_FUNC) {
         std::string leftStr = printNode(node->left);
         std::string rightStr = printNode(node->right);
-        return funcStr + "(" + leftStr + ", " + rightStr + ")";
+        return funcStr + "(" + leftStr + "," + rightStr + ")";
     } else {
         std::string argStr = printNode(node->left);
         return funcStr + "(" + argStr + ")";
@@ -72,6 +75,9 @@ int TreePrinter::getPrecedence(const ExprNodePtr& node) const {
 }
 
 bool TreePrinter::needParentheses(const ExprNodePtr& parent, const ExprNodePtr& child, bool isRight) const {
+    if (!child) {
+        return false;
+    }
     if (parent->type == NodeType::OPERATOR && child->type == NodeType::OPERATOR) {
         int parentPrec = getPrecedence(parent);
         int childPrec = getPrecedence(child);
@@ -112,6 +118,8 @@ std::string TreePrinter::getFunctionString(FunctionType func) const {
             return "tan";
         case FunctionType::LOG:
             return "log";
+        case FunctionType::LN:
+            return "ln";
         case FunctionType::EXP:
             return "exp";
         case FunctionType::POW_FUNC:
