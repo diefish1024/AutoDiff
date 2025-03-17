@@ -84,13 +84,13 @@ ExprNodePtr ExpressionBuilder::parsePrimary() {
                 if (isTokenAvailable() && consumeToken() == ",") {
                     ExprNodePtr arg2 = parseExpression();
                     if (isTokenAvailable() && consumeToken() == ")") {
-                        return buildFunction(token, funcType, std::move(arg1), std::move(arg2));
+                        return buildFunction(funcType, std::move(arg1), std::move(arg2));
                     }
                 }
             } else { // ln, cos, sin, tan, exp
                 ExprNodePtr arg = parseExpression();
                 if (isTokenAvailable() && consumeToken() == ")") {
-                    return buildFunction(token, funcType, std::move(arg));
+                    return buildFunction(funcType, std::move(arg));
                 }
             }
         }
@@ -185,10 +185,10 @@ ExprNodePtr autodiff::buildOperator(OperatorType opType, ExprNodePtr arg1, ExprN
     return std::make_unique<ExprNode>(NodeType::OPERATOR, opType, std::move(arg1), std::move(arg2));
 }
 
-ExprNodePtr autodiff::buildFunction(std::string token, FunctionType funcType, ExprNodePtr arg) {
+ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg) {
     return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, std::move(arg));
 }
 
-ExprNodePtr autodiff::buildFunction(std::string token, FunctionType funcType, ExprNodePtr arg1, ExprNodePtr arg2) {
+ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg1, ExprNodePtr arg2) {
     return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, std::move(arg1), std::move(arg2));
 }

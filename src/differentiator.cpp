@@ -64,7 +64,7 @@ ExprNodePtr Differentiator::diffOperator(const ExprNodePtr& expr, const std::str
                 buildOperator(OperatorType::MUL, std::move(originalRightCopy), std::move(uPowVMinus1)),
                 std::move(left));
             ExprNodePtr term2 = buildOperator(OperatorType::MUL,
-                buildOperator(OperatorType::MUL, buildFunction(std::string("ln"), FunctionType::LN, std::move(originalLeftCopy)),
+                buildOperator(OperatorType::MUL, buildFunction(FunctionType::LN, std::move(originalLeftCopy)),
                     cloneSubtree(expr.get())),
                 std::move(right));
             return buildOperator(OperatorType::ADD, std::move(term1), std::move(term2));
@@ -90,8 +90,8 @@ ExprNodePtr Differentiator::diffFunction(const ExprNodePtr& expr, const std::str
         case FunctionType::LOG: { // log_base(value) = ln(value) / ln(base)
             ExprNodePtr originalRightCopy = cloneSubtree(originalRight.get());
             ExprNodePtr originalLeftCopy = cloneSubtree(originalLeft.get());
-            ExprNodePtr lnValue = buildFunction(std::string("ln"), FunctionType::LN, std::move(originalRightCopy));
-            ExprNodePtr lnBase = buildFunction(std::string("ln"), FunctionType::LN, std::move(originalLeftCopy));
+            ExprNodePtr lnValue = buildFunction(FunctionType::LN, std::move(originalRightCopy));
+            ExprNodePtr lnBase = buildFunction(FunctionType::LN, std::move(originalLeftCopy));
             
             ExprNodePtr numerator = buildOperator(OperatorType::SUB,
                 buildOperator(OperatorType::MUL,buildOperator(OperatorType::DIV, std::move(right), cloneSubtree(originalRight.get())),
@@ -106,21 +106,21 @@ ExprNodePtr Differentiator::diffFunction(const ExprNodePtr& expr, const std::str
         case FunctionType::COS: // (cos(u))' = -sin(u) * u'
             return buildOperator(OperatorType::MUL,
                 buildOperator(OperatorType::MUL, buildNumber(std::string("-1")),
-                    buildFunction(std::string("sin"), FunctionType::SIN, std::move(originalLeft))),
+                    buildFunction(FunctionType::SIN, std::move(originalLeft))),
                 std::move(left));
         case FunctionType::SIN: // (sin(u))' = cos(u) * u'
             return buildOperator(OperatorType::MUL,
-                buildFunction(std::string("cos"), FunctionType::COS, std::move(originalLeft)),
+                buildFunction(FunctionType::COS, std::move(originalLeft)),
                 std::move(left));
         case FunctionType::TAN: // (tan(u))' = (1/cos^2(u)) * u'
             return buildOperator(OperatorType::MUL,
                 buildOperator(OperatorType::DIV, buildNumber(std::string("1")),
-                    buildOperator(OperatorType::POW, buildFunction(std::string("cos"), FunctionType::COS, std::move(originalLeft)),
+                    buildOperator(OperatorType::POW, buildFunction(FunctionType::COS, std::move(originalLeft)),
                         buildNumber(std::string("2")))),
                 std::move(left));
         case FunctionType::EXP: // (exp(u))' = exp(u) * u'
             return buildOperator(OperatorType::MUL,
-                buildFunction(std::string("exp"), FunctionType::EXP, std::move(originalLeft)),
+                buildFunction(FunctionType::EXP, std::move(originalLeft)),
                 std::move(left));
         case FunctionType::POW_FUNC: { // pow(u, v)' = (u^v)'
             // (u^v)' = (v * u^(v-1) * u') + (ln(u) * u^v * v')
@@ -132,7 +132,7 @@ ExprNodePtr Differentiator::diffFunction(const ExprNodePtr& expr, const std::str
                 buildOperator(OperatorType::MUL, std::move(originalRightCopy), std::move(uPowVMinus1)),
                 std::move(left));
 
-            ExprNodePtr lnU = buildFunction(std::string("ln"), FunctionType::LN, std::move(originalLeftCopy));
+            ExprNodePtr lnU = buildFunction(FunctionType::LN, std::move(originalLeftCopy));
             ExprNodePtr powUV = buildOperator(OperatorType::POW, std::move(originalLeft), std::move(originalRight));
 
             ExprNodePtr term2 = buildOperator(OperatorType::MUL,
@@ -166,9 +166,9 @@ ExprNodePtr autodiff::cloneSubtree(const ExprNode* node) {
             break;
         case NodeType::FUNCTION: {
             if (node->right) {
-                newNode = buildFunction(node->value, node->funcType, cloneSubtree(node->left.get()), cloneSubtree(node->right.get()));
+                newNode = buildFunction(node->funcType, cloneSubtree(node->left.get()), cloneSubtree(node->right.get()));
             } else {
-                newNode = buildFunction(node->value, node->funcType, cloneSubtree(node->left.get()));
+                newNode = buildFunction(node->funcType, cloneSubtree(node->left.get()));
             }
             break;
         }
