@@ -15,9 +15,6 @@ namespace autodiff {
         ExprNodePtr diffOperator(const ExprNodePtr& expr, const std::string& var);
         ExprNodePtr diffFunction(const ExprNodePtr& expr, const std::string& var);
     };
-    
-    ExprNodePtr cloneSubtree(const ExprNode* expr);
-
 }; // namespace autodiff
 
 #endif // DIFFERENTIATOR_HPP

@@ -5,7 +5,6 @@
 #include <cmath>
 
 #include "differentiator.hpp"
-#include "expression_builder.hpp"
 
 using namespace autodiff;
 
@@ -145,35 +144,4 @@ ExprNodePtr Differentiator::diffFunction(const ExprNodePtr& expr, const std::str
             std::cerr << "Error: Unknown FunctionType in diffFunction" << std::endl;
             return nullptr;
     }
-}
-
-
-ExprNodePtr autodiff::cloneSubtree(const ExprNode* node) {
-    if (!node) {
-        return nullptr;
-    }
-
-    ExprNodePtr newNode;
-    switch (node->type) {
-        case NodeType::NUMBER:
-            newNode = buildNumber(node->value);
-            break;
-        case NodeType::VARIABLE:
-            newNode = buildVariable(node->value);
-            break;
-        case NodeType::OPERATOR:
-            newNode = buildOperator(node->opType, cloneSubtree(node->left.get()), cloneSubtree(node->right.get()));
-            break;
-        case NodeType::FUNCTION: {
-            if (node->right) {
-                newNode = buildFunction(node->funcType, cloneSubtree(node->left.get()), cloneSubtree(node->right.get()));
-            } else {
-                newNode = buildFunction(node->funcType, cloneSubtree(node->left.get()));
-            }
-            break;
-        }
-        default:
-            return nullptr;
-    }
-    return newNode;
 }

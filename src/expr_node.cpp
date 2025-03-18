@@ -36,3 +36,33 @@ ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg) {
 ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg1, ExprNodePtr arg2) {
     return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, std::move(arg1), std::move(arg2));
 }
+
+ExprNodePtr autodiff::cloneSubtree(const ExprNode* node) {
+    if (!node) {
+        return nullptr;
+    }
+
+    ExprNodePtr newNode;
+    switch (node->type) {
+        case NodeType::NUMBER:
+            newNode = buildNumber(node->value);
+            break;
+        case NodeType::VARIABLE:
+            newNode = buildVariable(node->value);
+            break;
+        case NodeType::OPERATOR:
+            newNode = buildOperator(node->opType, cloneSubtree(node->left.get()), cloneSubtree(node->right.get()));
+            break;
+        case NodeType::FUNCTION: {
+            if (node->right) {
+                newNode = buildFunction(node->funcType, cloneSubtree(node->left.get()), cloneSubtree(node->right.get()));
+            } else {
+                newNode = buildFunction(node->funcType, cloneSubtree(node->left.get()));
+            }
+            break;
+        }
+        default:
+            return nullptr;
+    }
+    return newNode;
+}
