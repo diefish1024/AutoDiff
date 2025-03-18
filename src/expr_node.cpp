@@ -25,17 +25,19 @@ ExprNodePtr autodiff::buildOperator(OperatorType opType) {
     return std::make_unique<ExprNode>(NodeType::OPERATOR, opType);
 }
 
-ExprNodePtr autodiff::buildOperator(OperatorType opType, ExprNodePtr arg1, ExprNodePtr arg2) {
-    return std::make_unique<ExprNode>(NodeType::OPERATOR, opType, std::move(arg1), std::move(arg2));
+ExprNodePtr autodiff::buildOperator(OperatorType opType, const ExprNodePtr& arg1, const ExprNodePtr& arg2) {
+    return std::make_unique<ExprNode>(NodeType::OPERATOR, opType, cloneSubtree(arg1.get()), cloneSubtree(arg2.get()));
 }
 
-ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg) {
-    return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, std::move(arg));
+ExprNodePtr autodiff::buildFunction(FunctionType funcType, const ExprNodePtr& arg) {
+    return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, cloneSubtree(arg.get()));
 }
 
-ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg1, ExprNodePtr arg2) {
-    return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, std::move(arg1), std::move(arg2));
+ExprNodePtr autodiff::buildFunction(FunctionType funcType, const ExprNodePtr& arg1, const ExprNodePtr& arg2) {
+    return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, cloneSubtree(arg1.get()), cloneSubtree(arg2.get()));
 }
+
+
 
 ExprNodePtr autodiff::cloneSubtree(const ExprNode* node) {
     if (!node) {

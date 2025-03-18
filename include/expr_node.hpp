@@ -45,9 +45,9 @@ namespace autodiff {
     ExprNodePtr buildNumber(std::string token);
     ExprNodePtr buildVariable(std::string token);
     ExprNodePtr buildOperator(OperatorType opType);
-    ExprNodePtr buildOperator(OperatorType opType, ExprNodePtr arg1, ExprNodePtr arg2);
-    ExprNodePtr buildFunction(FunctionType funcType, ExprNodePtr arg);
-    ExprNodePtr buildFunction(FunctionType funcType, ExprNodePtr arg1, ExprNodePtr arg2);
+    ExprNodePtr buildOperator(OperatorType opType, const ExprNodePtr& arg1, const ExprNodePtr& arg2);
+    ExprNodePtr buildFunction(FunctionType funcType, const ExprNodePtr& arg);
+    ExprNodePtr buildFunction(FunctionType funcType, const ExprNodePtr& arg1, const ExprNodePtr& arg2);
     ExprNodePtr cloneSubtree(const ExprNode* expr);
 
 }; // namespace autodiff
