@@ -8,12 +8,13 @@
 #include "expression_builder.hpp"
 #include "differentiator.hpp"
 #include "tree_printer.hpp"
+#include "simplifier.hpp"
 
 using namespace autodiff;
 
 int main() {
     std::string expr;
-    // std::cout << "Enter an expression: ";
+    std::cout << "Enter an expression: ";
     std::getline(std::cin, expr);
 
     Tokenizer tokenizer(expr);
@@ -22,6 +23,8 @@ int main() {
     ExpressionBuilder builder(tokens);
     ExprNodePtr root = builder.build();
 
+    Simplifier simplifier;
+    root = simplifier.simplify(std::move(root));
     Differentiator differentiator;
     TreePrinter printer;
 
@@ -30,6 +33,7 @@ int main() {
 
     for (const std::string& var : vars) {
         ExprNodePtr diff = differentiator.differentiate(root, var);
+        diff = simplifier.simplify(std::move(diff));
         std::string derivativeExpr = printer.print(diff);
         std::cout << var << ": " << derivativeExpr << std::endl;
     }
