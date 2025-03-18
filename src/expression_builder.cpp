@@ -168,27 +168,3 @@ FunctionType ExpressionBuilder::getFunctionType(const std::string& token) const 
         return FunctionType::NONE_FUNC;
     }
 }
-
-ExprNodePtr autodiff::buildNumber(std::string token) {
-    return std::make_unique<ExprNode>(NodeType::NUMBER, token);
-}
-
-ExprNodePtr autodiff::buildVariable(std::string token) {
-    return std::make_unique<ExprNode>(NodeType::VARIABLE, token);
-}
-
-ExprNodePtr autodiff::buildOperator(OperatorType opType) {
-    return std::make_unique<ExprNode>(NodeType::OPERATOR, opType);
-}
-
-ExprNodePtr autodiff::buildOperator(OperatorType opType, ExprNodePtr arg1, ExprNodePtr arg2) {
-    return std::make_unique<ExprNode>(NodeType::OPERATOR, opType, std::move(arg1), std::move(arg2));
-}
-
-ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg) {
-    return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, std::move(arg));
-}
-
-ExprNodePtr autodiff::buildFunction(FunctionType funcType, ExprNodePtr arg1, ExprNodePtr arg2) {
-    return std::make_unique<ExprNode>(NodeType::FUNCTION, funcType, std::move(arg1), std::move(arg2));
-}

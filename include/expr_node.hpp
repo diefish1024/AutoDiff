@@ -42,6 +42,13 @@ namespace autodiff {
 
     typedef std::unique_ptr<ExprNode> ExprNodePtr;
 
+    ExprNodePtr buildNumber(std::string token);
+    ExprNodePtr buildVariable(std::string token);
+    ExprNodePtr buildOperator(OperatorType opType);
+    ExprNodePtr buildOperator(OperatorType opType, ExprNodePtr arg1, ExprNodePtr arg2);
+    ExprNodePtr buildFunction(FunctionType funcType, ExprNodePtr arg);
+    ExprNodePtr buildFunction(FunctionType funcType, ExprNodePtr arg1, ExprNodePtr arg2);
+
 }; // namespace autodiff
 
 #endif // EXPR_NODE_HPP
